@@ -15,12 +15,10 @@
 
 - [项目动机](#项目动机)
 - [业务场景](#业务场景)
-- [架构概览](#架构概览)
 - [快速开始](#快速开始)
 - [核心特性](#核心特性)
 - [指标体系](#指标体系)
 - [已知局限](#已知局限)
-- [文档索引](#文档索引)
 - [许可证](#许可证)
 
 ---
@@ -47,37 +45,6 @@
 - **13 种事件类型**：`app_open`、`enter_item`、`leave_item`、`like`、`fav`、`share`、`comment`、`follow`、`unfollow`、`dm`、`enter_profile`、`click_tag`、`dislike`
 - **250 名模拟用户** × **100 篇内容笔记** — 5 个类目（身心健康、知识成长、时尚美妆、家庭生活、生活记录）
 - **30-50 EPS** 持续产出，含 10% 人为注入的乱序（30-90s）和 6 种异常行为模式
-
----
-
-## 🏗 架构概览
-
-Mock Generator (Java) → Kafka → Spark Structured Streaming
-│
-├── ODS: 清洗后原始事件 → Delta Lake
-│
-└── foreachBatch (维表关联 + Unknown 填充)
-│
-└── DWD: 关联后明细 → Delta Lake
-│
-└── readStream
-│
-▼
-enrichedStream
-│
-┌──────────────────────────────┼──────────────────────────────┐
-▼                              ▼                              ▼
-┌─────────────────┐            ┌─────────────────┐            ┌─────────────────┐
-│ 窗口聚合 (5/30min)│          │  CEP 状态机     │             │Bloom 新用户判别 │
-│ DAU/PV/UV/互动率 │           │A1 刷屏 + A2 狂赞│             │ U-04 增量计数   │
-└────────┬────────┘            └────────┬────────┘            └────────┬────────┘
-         │                              │                              │
-         ▼                              ▼                              ▼
-┌─────────────────┐            ┌─────────────────┐            ┌─────────────────┐
-│  Redis (热)     │            │  MemorySink     │            │  MemorySink      │
-│  5 条 Hash 前缀 │            │  (验证用)       │            │  (验证用)        │
-│  TTL 1h         │            └─────────────────┘            └─────────────────┘
-└─────────────────┘
 
 ---
 
@@ -163,20 +130,6 @@ redis-cli --raw HGETALL 'dws:user_activity:1781092200_1781092500:家庭生活'
 | Bloom 全域单 Key 无 TTL | 超过 capacity 后误判率上升 | 按日分片或定时重建 |
 | 未做压测 | "80% 内存节省""万级吞吐"均为理论估算 | 生产环境压测验证 |
 | `complete` 模式的聚合流 | 每批全量重写 Redis，造成窗口修正波动 | 改为 `update` 模式 |
-
----
-
-## 📚 文档索引
-
-| 文档 | 用途 |
-|---|---|
-| [`project_specs/overall_spec/RealTime_DataWarehouse_Project_Spec.md`](project_specs/overall_spec/RealTime_DataWarehouse_Project_Spec.md) | 项目核心规约 |
-| [`project_specs/overall_spec/RealTime_DataWarehouse_Indicator_Implementation_List.md`](project_specs/overall_spec/RealTime_DataWarehouse_Indicator_Implementation_List.md) | 28 项指标完整定义 |
-| [`project_specs/overall_spec/Remaining_Work_Plan.md`](project_specs/overall_spec/Remaining_Work_Plan.md) | G-01~G-07 剩余工作计划 |
-| [`project_specs/mock_generator/`](project_specs/mock_generator/) | Mock Generator 设计/实现/用户指南 |
-| [`简历项目追问.md`](简历项目追问.md) | 面试追问问题库（59 问） |
-| [`answer.md`](answer.md) | 59 问逐题回答 |
-| [`流程.md`](流程.md) | 架构全景图与配置矩阵 |
 
 ---
 
