@@ -1,0 +1,12 @@
+.bloop/
+.bsp/
+.idea/
+.metals/
+.trae/
+.vscode/
+data/
+project/target/
+project/.bloop/
+project/project/
+spark-warehouse/
+target/
