@@ -32,16 +32,16 @@ RealTime Mock Generator 是一款专为"小红书式"内容社区实时数仓设
 三、运行环境与规格
 --------------------------------------------------------------------------
 - 语言环境：Java 8 (JDK 1.8.0_412+)
-- 消息队列：Kafka (默认集群 192.168.10.102-104:9092)
+- 消息队列：Kafka (默认集群 具体IP:9092)
 - 默认 Topic：content_events (自动创建，3 分区, 2 副本)
-- 维表存储：Linux 本地目录 /home/hyr/data_files (自动管理)
+- 维表存储：Linux 本地目录 /home/您的账号/data_files (自动管理)
 - 物理延迟：消息发送前随机注入 5-20ms 真实物理传输延迟。
 
 四、详细使用指南
 --------------------------------------------------------------------------
 1. 部署环境准备：
    - 节点要求：建议在 hadoop102 节点运行，确保能访问集群内所有 Kafka Broker。
-   - 目录权限：执行命令 `mkdir -p /home/hyr/data_files` 确保目录存在且当前用户有写权限。
+   - 目录权限：执行命令 `mkdir -p /home/您的账号/data_files` 确保目录存在且当前用户有写权限。
    - JDK 检查：执行 `java -version` 确认版本为 1.8.x。
 
 2. 程序启动 (Start)：
@@ -72,13 +72,13 @@ RealTime Mock Generator 是一款专为"小红书式"内容社区实时数仓设
 五、数据验证步骤
 --------------------------------------------------------------------------
 1. 维表自动生成验证：
-   检查 /home/hyr/data_files 下是否自动生成了：
+   检查 /home/您的账号/data_files 下是否自动生成了：
    - dim_user_profile.csv (250条，20%带画像标签)
    - dim_item.csv (100条，5大分类均衡分布)
 
 2. Kafka 实时流验证：
    在虚拟机终端执行：
-   kafka-console-consumer.sh --bootstrap-server hadoop102:9092 --topic content_events --property print.key=true
+   kafka-console-consumer.sh --bootstrap-server 具体IP:9092 --topic content_events --property print.key=true
 
 六、详细 FAQ (常见问题与故障排查)
 --------------------------------------------------------------------------
@@ -96,7 +96,7 @@ Q3: Kafka 无法发送消息，提示 "TimeoutException" 或 "Connection Refused
 A3: 请检查：
     1. 虚拟机防火墙是否关闭 (systemctl stop firewalld)。
     2. Kafka 的 server.properties 中 listeners 是否正确配置为集群 IP。
-    3. Windows 物理机是否能 ping 通 192.168.10.102。
+    3. Windows 物理机是否能 ping 通 具体IP。
 
 Q4: 为什么我的 IDEA 控制台看不到数据？
 A4: 请检查：
