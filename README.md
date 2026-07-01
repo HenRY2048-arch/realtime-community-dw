@@ -101,7 +101,7 @@ redis-cli --raw HGETALL 'dws:user_activity:1781092200_1781092500:家庭生活'
 
 ### 🔍 CEP 作弊检测
 
-基于 `flatMapGroupsWithState` 的自定义状态机，**不使用时间窗口**：
+基于 `flatMapGroupsWithState` 的自定义状态机：
 
 | 异常类型 | 判定规则 |
 |---|---|
